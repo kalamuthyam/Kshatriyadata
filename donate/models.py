@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Subscribers(models.Model):
+    id = models.IntegerField(primary_key=True)
     mobile = models.CharField(db_column='Mobile', max_length=15, blank=True, null=True)  # Field name made lowercase.
     otp = models.CharField(db_column='Otp', max_length=15, blank=True, null=True)  # Field name made lowercase.
     name = models.CharField(db_column='Name', max_length=45, blank=True, null=True)  # Field name made lowercase.
@@ -30,6 +31,7 @@ class Subscribers(models.Model):
     termsandconditions = models.IntegerField(blank=True, null=True)
     relationship = models.CharField(max_length=45, blank=True, null=True)
     membertype = models.CharField(max_length=10, blank=True, null=True)
+    mobile2 = models.CharField(max_length=15, blank=True, null=True)
 
 
     class Meta:

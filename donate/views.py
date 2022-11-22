@@ -132,23 +132,26 @@ def drop123(request):
     # else:
         # sc = Subscribers.objects.create(mobile = data['mobile'],otp = generateOTP())
     otp = generateOTP()
-    x = """select * from Subscribers where mobile = '{}' and membertype = 'primary' order by id desc""".format(data['mobile'])
+    x = """select * from Subscribers where mobile = '{}' order by id desc""".format(data['mobile'])
+    # x = """select * from Subscribers where mobile = '{}' and membertype = 'primary' order by id desc""".format(data['mobile'])
     y = '1'
-    # msg = "{0} is OTP for Data updating of Vanabhojana Committee, Hyderabad.".format(otp)
-    msg = "Dear {0}, Thanks for the Donation of {0} Rupees to Kshatriya Vanabhojanalu-2022.".format(otp)
+    # msg = " {0} is OTP for Data updating of Vanabhojana Committee, Hyderabad.".format(otp)
+    # msg = "Dear {0}, Thanks for the Donation of {0} Rupees to Kshatriya Vanabhojanalu-2022.".format(otp)
     print('2')
-    url = "https://2factor.in/API/R1/"
-    values = {'module': 'TRANS_SMS',
-              'apikey': '0f045e86-fca4-11ea-9fa5-0200cd936042',
-              'to': data['mobile'],
-              'from': 'KKVHYD',
-              'msg': msg
-              }
-    data = urllib.parse.urlencode(values)
-    data = data.encode('utf-8')
-    print(data)
-    f = urllib.request.urlopen(url, data)
-    print(f, 'totalurl')
+    url = "https://2factor.in/API/V1/0f045e86-fca4-11ea-9fa5-0200cd936042/SMS/{0}/{1}/OTPKKV".format(data['mobile'],otp)
+    # url = "https://2factor.in/API/R1/"
+    # values = {'module': 'TRANS_SMS',
+    #           'apikey': '0f045e86-fca4-11ea-9fa5-0200cd936042',
+    #           'to': data['mobile'],
+    #           'from': 'KKVHYD',
+    #           'msg': msg
+    #           }
+    # data = urllib.parse.urlencode(values)
+    # data = data.encode('utf-8')
+    # print(data)
+    f = urllib.request.urlopen(url)
+    # print(f)
+    # print(f, 'totalurl')
     fe = f.read().decode('utf-8')
     return Response({'data':exe_an_sp(x),'status' : y,'otp':otp})
 
@@ -160,7 +163,7 @@ def inssubcribers(request):
     # print(data)
     if data['membertype'] == 'Primary':
         print('1')
-        g = Subscribers.objects.filter(mobile=data['mobile'],name=data['name'])
+        g = Subscribers.objects.filter(id=data['id'])
         if g.exists():
             print('2')
             sc = g.update(mobile=data['mobile'], name=data['name'], surname=data['surname'],
@@ -176,7 +179,8 @@ def inssubcribers(request):
                                             dob=data['dob'], age=data['age'], district=data['district'],
                                             image=data['image'],
                                             termsandconditions=data['termsandconditions'],
-                                            relationship=data['relationship'], membertype=data['membertype'])
+                                            relationship=data['relationship'], membertype=data['membertype'],
+                                            mobile2 = data['mobile2'])
         else:
             print('3')
             sc = Subscribers.objects.create(mobile=data['mobile'],name = data['name'],surname = data['surname'],address1 = data['address1'],
@@ -185,10 +189,10 @@ def inssubcribers(request):
                                         address2 = data['address2'],nickname = data['nickname'],area = data['area'],city = data['city'],
                                         state = data['state'],pincode = data['pincode'],native = data['native'],gotra = data['gotra'],bloodgroup = data['bloodgroup'],
                                         dob = data['dob'],age = data['age'],district = data['district'],image = data['image'],
-                                        termsandconditions = data['termsandconditions'],relationship = data['relationship'],membertype = data['membertype'])
+                                        termsandconditions = data['termsandconditions'],relationship = data['relationship'],membertype = data['membertype'],mobile2 = data['mobile2'])
     if data['membertype'] == 'Secondary':
         print('4')
-        g = Subscribers.objects.filter(mobile=data['mobile'],name = data['name'])
+        g = Subscribers.objects.filter(id = data['id'],mobile=data['mobile'],name = data['name'])
         if g.exists():
             print('5')
             sc = g.update(mobile=data['mobile'], name=data['name'], surname=data['surname'],
@@ -204,38 +208,60 @@ def inssubcribers(request):
                                             dob=data['dob'], age=data['age'], district=data['district'],
                                             image=data['image'],
                                             termsandconditions=data['termsandconditions'],
-                                            relationship=data['relationship'], membertype=data['membertype'])
+                                            relationship=data['relationship'], membertype=data['membertype'],
+                                            mobile2 = data['mobile2'])
         else:
-            sc = Subscribers.objects.create(mobile=data['mobile'], name=data['name'], surname=data['surname'],
-                                            address1=data['address1'],
-                                            email=data['email'], otherinfo=data['otherinfo'],
-                                            cnfdonate=data['cnfdonate'], amount=data['amount'],
-                                            datasubmetby=data['datasubmetby'], agentmobile=data['agentmobile'],
-                                            date=datetime.now(),
-                                            address2=data['address2'], nickname=data['nickname'], area=data['area'],
-                                            city=data['city'],
-                                            state=data['state'], pincode=data['pincode'], native=data['native'],
-                                            gotra=data['gotra'], bloodgroup=data['bloodgroup'],
-                                            dob=data['dob'], age=data['age'], district=data['district'],
-                                            image=data['image'],
-                                            termsandconditions=data['termsandconditions'],
-                                            relationship=data['relationship'], membertype=data['membertype'])
-    if data['cnfdonate'] == 'Yes':
-        msg = "Dear {}, Thanks for the Donation of {} Rupees to Kshatriya Vanabhojanalu-2022.".format(data['name'],data['amount'])
-        print('2')
-        url = "https://2factor.in/API/R1/"
-        values = {'module': 'TRANS_SMS',
-                  'apikey': '0f045e86-fca4-11ea-9fa5-0200cd936042',
-                  'to' : data['mobile'],
-                  'from' : 'KKVHYD',
-                  'msg': msg
-                  }
-        data = urllib.parse.urlencode(values)
-        data = data.encode('utf-8')
-        print(data)
-        f = urllib.request.urlopen(url, data)
-        print(f,'totalurl')
-        fe = f.read().decode('utf-8')
+            print('k1')
+            g = Subscribers.objects.filter(id = data['id'], name=data['name'])
+            if g.exists():
+                print('5')
+                sc = g.update(mobile=data['mobile2'], name=data['name'], surname=data['surname'],
+                              address1=data['address1'],
+                              email=data['email'], otherinfo=data['otherinfo'],
+                              cnfdonate=data['cnfdonate'], amount=data['amount'],
+                              datasubmetby=data['datasubmetby'], agentmobile=data['agentmobile'],
+                              date=datetime.now(),
+                              address2=data['address2'], nickname=data['nickname'], area=data['area'],
+                              city=data['city'],
+                              state=data['state'], pincode=data['pincode'], native=data['native'],
+                              gotra=data['gotra'], bloodgroup=data['bloodgroup'],
+                              dob=data['dob'], age=data['age'], district=data['district'],
+                              image=data['image'],
+                              termsandconditions=data['termsandconditions'],
+                              relationship=data['relationship'], membertype=data['membertype'],
+                              mobile2=data['mobile'])
+            else:
+                print('k2')
+                sc = Subscribers.objects.create(mobile=data['mobile2'], name=data['name'], surname=data['surname'],
+                                                address1=data['address1'],
+                                                email=data['email'], otherinfo=data['otherinfo'],
+                                                cnfdonate=data['cnfdonate'], amount=data['amount'],
+                                                datasubmetby=data['datasubmetby'], agentmobile=data['agentmobile'],
+                                                date=datetime.now(),
+                                                address2=data['address2'], nickname=data['nickname'], area=data['area'],
+                                                city=data['city'],
+                                                state=data['state'], pincode=data['pincode'], native=data['native'],
+                                                gotra=data['gotra'], bloodgroup=data['bloodgroup'],
+                                                dob=data['dob'], age=data['age'], district=data['district'],
+                                                image=data['image'],
+                                                termsandconditions=data['termsandconditions'],
+                                                relationship=data['relationship'], membertype=data['membertype'],mobile2 = data['mobile'])
+    # if data['cnfdonate'] == 'Yes':
+    msg = "Dear {0}, Thanks for updating your information to Kshatriya Vanabhojana Committee.".format(data['name'])
+    print('2')
+    url = "https://2factor.in/API/R1/"
+    values = {'module': 'TRANS_SMS',
+              'apikey': '0f045e86-fca4-11ea-9fa5-0200cd936042',
+              'to' : data['mobile'],
+              'from' : 'KKVHYD',
+              'msg': msg
+              }
+    data = urllib.parse.urlencode(values)
+    data = data.encode('utf-8')
+    print(data)
+    f = urllib.request.urlopen(url, data)
+    print(f,'totalurl')
+    fe = f.read().decode('utf-8')
     return Response({'status':'Done'})
 
 @api_view(['GET', ])
@@ -380,5 +406,5 @@ def ggetcustomer(request):
 @api_view(['GET', ])
 def getseclist(request):
     param_other1 = request.query_params.get('param_other1')
-    x = """SELECT * FROM subscribers where mobile = '{}' and membertype = 'Secondary'""".format(param_other1)
+    x = """SELECT * FROM subscribers where mobile2 = '{}' and membertype = 'Secondary'""".format(param_other1)
     return Response(exe_an_sp(x))
